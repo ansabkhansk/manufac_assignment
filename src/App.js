@@ -4,30 +4,30 @@ import './App.css';
 import Alcohol from './Alcohol';
 
 function App() {
-  const alcohol = Alcohol.map(alcoholData => {
-    return alcoholData['Alcohol']
-  })
-  const alcoholCategory = [...new Set(alcohol)] //To create alcohol category array
-
-  const malicAcid = []
-  for (var i = 0; i < alcoholCategory.length; i++) {
-    var sum = 0;
-    var count = 0;
-    for (var j = 0; j < alcohol.length; j++) {
-      if (alcohol[j] === alcoholCategory[i]) {
-        count++;
-        sum += Alcohol[j]['Malic Acid']
-      }
+  const averages = {};
+  const colorIntensity = [];
+  const hue = [];
+  for (let i = 0; i < Alcohol.length; i++) {
+    const fluid = Alcohol[i]; // Define a constant fluid and stores all objects (in key value pairs) from the Alcohol array 
+    colorIntensity.push(fluid['Color intensity']);
+    hue.push(fluid.Hue);
+    const alcoholContent = fluid.Alcohol; // To store the values of key "Alcohol" from the fluid object
+    if (!averages[alcoholContent]) {
+      averages[alcoholContent] = { length: 0, sum: 0, average: 0 }; // If the condition is true then it will assign the objects with properties inside the specific position of averages object.
     }
-    malicAcid[i] = sum / count;  //To find average of Malic Acid according to alcohol category and insert them in an array
+    const alcohol = averages[alcoholContent];
+    console.log(alcohol)
+    alcohol.length++;
+    alcohol.sum += fluid['Malic Acid'];
+    alcohol.average = alcohol.sum / alcohol.length;
   }
 
-  const colorIntensity = Alcohol.map(alcoholData => {
-    return alcoholData['Color intensity']  //return Array of Color Intensity
-  })
-  const hue = Alcohol.map(alcoholData => {
-    return alcoholData['Hue']  //return Array of Hue
-  })
+  const alcoholCategory = [];
+  const malicAcid = [];
+  for (const a in averages) {
+    alcoholCategory.push(a) // Push indices as a category in alcohol category array
+    malicAcid.push(averages[a].average) // Push average value from averages object in Malic acid array.
+  }
 
   const barChart = {
     xAxis: {
@@ -102,11 +102,11 @@ function App() {
       <ReactEcharts
         option={barChart}
         style={{ width: "600px", height: "300px" }}
-      ></ReactEcharts>
+      />
       <ReactEcharts
         option={scatterPlot}
         style={{ width: "600px", height: "300px" }}
-      ></ReactEcharts>
+      />
     </>
   );
 }
